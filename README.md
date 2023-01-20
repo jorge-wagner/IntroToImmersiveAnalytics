@@ -28,11 +28,11 @@ O objetivo deste material é auxiliar no desenvolvimento do projeto da disciplin
     * Scatterplot interativo gerado utilizando GameObjects
        * Versão MRTK
        * Versão Oculus Interaction SDK
-    * Mapa interativo utilizando o Bing Maps SDK
+    * Mapa interativo utilizando o Bing Maps SDK (interação com MRTK)
+    * Scatterplot interativo gerado utilizando o IATK (interação com MRTK)
 
     Ao longo do tempo novos exemplos serão incluídos: 
 
-    * Scatterplot interativo gerado utilizando o IATK
     * Cubo espaço-temporal mostrando como georeferenciar dados
     * Calibração da posição da mesa utilizando *Spatial Anchors*
 

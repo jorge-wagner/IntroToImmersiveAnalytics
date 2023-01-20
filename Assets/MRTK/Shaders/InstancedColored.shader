@@ -35,14 +35,14 @@ Shader "Hidden/Instanced-Colored"
 
             struct appdata_t
             {
-                fixed4 vertex : POSITION;
+                float4 vertex : POSITION;
                 UNITY_VERTEX_INPUT_INSTANCE_ID
             };
 
             struct v2f
             {
-                fixed4 vertex : SV_POSITION;
-                fixed4 color : COLOR0;
+                float4 vertex : SV_POSITION;
+                float4 color : COLOR0;
                 UNITY_VERTEX_OUTPUT_STEREO
             };
 
@@ -63,7 +63,7 @@ Shader "Hidden/Instanced-Colored"
                 return o;
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            float4 frag(v2f i) : SV_Target
             {
                 return i.color;
             }

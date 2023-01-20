@@ -119,14 +119,14 @@ SubShader {
         uniform sampler2D    _FaceTex;                    // Alpha : Signed Distance
         uniform float        _FaceUVSpeedX;
         uniform float        _FaceUVSpeedY;
-        uniform fixed4        _FaceColor;                    // RGBA : Color + Opacity
+        uniform float4        _FaceColor;                    // RGBA : Color + Opacity
         uniform float        _FaceDilate;                // v[ 0, 1]
         uniform float        _OutlineSoftness;            // v[ 0, 1]
         
         uniform sampler2D    _OutlineTex;                // RGBA : Color + Opacity
         uniform float        _OutlineUVSpeedX;
         uniform float        _OutlineUVSpeedY;
-        uniform fixed4        _OutlineColor;                // RGBA : Color + Opacity
+        uniform float4        _OutlineColor;                // RGBA : Color + Opacity
         uniform float        _OutlineWidth;                // v[ 0, 1]
         
         uniform float        _Bevel;                        // v[ 0, 1]
@@ -140,25 +140,25 @@ SubShader {
         uniform float        _BumpFace;                    // v[ 0, 1]
         
         uniform samplerCUBE    _Cube;                        // Cube / sphere map
-        uniform fixed4         _ReflectFaceColor;            // RGB intensity
-        uniform fixed4        _ReflectOutlineColor;
+        uniform float4         _ReflectFaceColor;            // RGB intensity
+        uniform float4        _ReflectOutlineColor;
         uniform float3      _EnvMatrixRotation;
         uniform float4x4    _EnvMatrix;
         
-        uniform fixed4        _SpecularColor;                // RGB intensity
+        uniform float4        _SpecularColor;                // RGB intensity
         uniform float        _LightAngle;                // v[ 0,Tau]
         uniform float        _SpecularPower;                // v[ 0, 1]
         uniform float        _Reflectivity;                // v[ 5, 15]
         uniform float        _Diffuse;                    // v[ 0, 1]
         uniform float        _Ambient;                    // v[ 0, 1]
         
-        uniform fixed4        _UnderlayColor;                // RGBA : Color + Opacity
+        uniform float4        _UnderlayColor;                // RGBA : Color + Opacity
         uniform float        _UnderlayOffsetX;            // v[-1, 1]
         uniform float        _UnderlayOffsetY;            // v[-1, 1]
         uniform float        _UnderlayDilate;            // v[-1, 1]
         uniform float        _UnderlaySoftness;            // v[ 0, 1]
         
-        uniform fixed4         _GlowColor;                    // RGBA : Color + Intensity
+        uniform float4         _GlowColor;                    // RGBA : Color + Intensity
         uniform float         _GlowOffset;                // v[-1, 1]
         uniform float         _GlowOuter;                    // v[ 0, 1]
         uniform float         _GlowInner;                    // v[ 0, 1]
@@ -195,17 +195,17 @@ SubShader {
         uniform float        _Sharpness;
 
 #if defined(_CLIPPING_PLANE)
-        fixed _ClipPlaneSide;
+        float _ClipPlaneSide;
         float4 _ClipPlane;
 #endif
 
 #if defined(_CLIPPING_SPHERE)
-        fixed _ClipSphereSide;
+        float _ClipSphereSide;
         float4x4 _ClipSphereInverseTransform;
 #endif
 
 #if defined(_CLIPPING_BOX)
-        fixed _ClipBoxSide;
+        float _ClipBoxSide;
         float4x4 _ClipBoxInverseTransform;
 #endif
 
@@ -213,7 +213,7 @@ SubShader {
             UNITY_VERTEX_INPUT_INSTANCE_ID
             float4    vertex            : POSITION;
             float3    normal            : NORMAL;
-            fixed4    color            : COLOR;
+            float4    color            : COLOR;
             float2    texcoord0        : TEXCOORD0;
             float2    texcoord1        : TEXCOORD1;
         };
@@ -222,8 +222,8 @@ SubShader {
             UNITY_VERTEX_INPUT_INSTANCE_ID
             UNITY_VERTEX_OUTPUT_STEREO
             float4    vertex            : SV_POSITION;
-            fixed4    faceColor        : COLOR;
-            fixed4    outlineColor    : COLOR1;
+            float4    faceColor        : COLOR;
+            float4    outlineColor    : COLOR1;
             float4    texcoord0        : TEXCOORD0;            // Texture UV, Mask UV
             half4    param            : TEXCOORD1;            // Scale(x), BiasIn(y), BiasOut(z), Bias(w)
             half4    mask            : TEXCOORD2;            // Position in clip space(xy), Softness(zw)
@@ -274,10 +274,10 @@ SubShader {
             opacity = 1.0;
             #endif
 
-            fixed4 faceColor = fixed4(input.color.rgb, opacity) * _FaceColor;
+            float4 faceColor = float4(input.color.rgb, opacity) * _FaceColor;
             faceColor.rgb *= faceColor.a;
 
-            fixed4 outlineColor = _OutlineColor;
+            float4 outlineColor = _OutlineColor;
             outlineColor.a *= opacity;
             outlineColor.rgb *= outlineColor.a;
             outlineColor = lerp(faceColor, outlineColor, sqrt(min(1.0, (outline * 2))));
@@ -315,7 +315,7 @@ SubShader {
 
 
         // PIXEL SHADER
-        fixed4 PixShader(pixel_t input) : SV_Target
+        float4 PixShader(pixel_t input) : SV_Target
         {
             UNITY_SETUP_INSTANCE_ID(input);
             

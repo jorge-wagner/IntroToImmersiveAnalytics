@@ -21,27 +21,36 @@ O objetivo deste material é auxiliar no desenvolvimento do projeto da disciplin
     * **Atenção:** O *copyright* das ferramentas acima pertencem aos seus autores. O propósito deste repositório é estritamente acadêmico.
 
 
+
 3. Disponibilizando exemplos básicos de como criar visualizações interativas, a partir das seguintes cenas:
     * Interações básicas utilizando o MRTK
     * Interações básicas utilizando o Oculus Interaction SDK
     * Scatterplot interativo gerado utilizando GameObjects
        * Versão MRTK
        * Versão Oculus Interaction SDK
-    * Scatterplot interativo gerado utilizando o IATK
     * Mapa interativo utilizando o Bing Maps SDK
-    * Cubo espaço-temporal mostrando como georeferenciar dados
-    * Calibração da posição da mesa utilizando Spatial Anchors
 
+    Ao longo do tempo novos exemplos serão incluídos: 
+
+    * Scatterplot interativo gerado utilizando o IATK
+    * Cubo espaço-temporal mostrando como georeferenciar dados
+    * Calibração da posição da mesa utilizando *Spatial Anchors*
+
+
+  * **Atenção:** Notem que os exemplos que incluímos aqui são bastante simplificados, não incluindo seleções, filtros, visualizações coordenadas ou interações mais complexas. A intenção dos exemplos é fornecer um caminho inicial, e não servir como exemplo de um ambiente completo de visualização imersiva. 
+  * **Atenção:** Os exemplos reproduzem o objeto *RoomEnvironment* como cenário de fundo. Este ambiente é de autoria do Oculus Integration Package. 
+
+    
 
 ## Onde encontrar os exemplos
 
 Os seguintes exemplos estão contidos neste projeto e podem ser explorados para o estudo das funcionalidades disponíveis:
 
 1. Exemplos simplificados preparados por nós: `Assets/Scenes`
-2. Exemplos do Oculus Interaction SDK: `Assets/Oculus/Interaction/Samples/Scenes/Examples`
-3. Exemplos do MRTK: `Assets/MRTK/Samples`
-4. Exemplos do Bing Maps SDK: `Assets/MapsSDK/Microsoft.Maps.Unity.Examples`
-5. Exemplos do IATK: `Assets/IATK/Scenes`
+2. [Exemplos do Oculus Interaction SDK](https://developers.facebook.com/blog/post/2022/11/22/building-intuitive-interactions-vr/): `Assets/Oculus/Interaction/Samples/Scenes/Examples`
+3. [Exemplos do Bing Maps SDK](https://github.com/microsoft/MapsSDK-Unity/wiki/Sample-project#example-scenes-for-mixed-reality-devices): `Assets/MapsSDK/Microsoft.Maps.Unity.Examples`
+4. Exemplos do IATK: `Assets/IATK/Scenes`
+5. [Exemplos do MRTK](https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk2/features/example-scenes/example-hub?view=mrtkunity-2022-05): `Mixed Reality > Toolkit > Utilities > Import Examples from Package (UPM)`
 
 
    

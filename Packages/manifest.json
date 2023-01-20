@@ -1,6 +1,6 @@
 {
   "scopedRegistries": [
-  	{
+    {
       "name": "Maps SDK for Unity",
       "url": "https://unity.virtualearth.net/npm/registry/",
       "scopes": [
@@ -16,13 +16,11 @@
       ]
     }
   ],
-"dependencies": {
-	"com.microsoft.maps.unity": "0.11.2",
-
+  "dependencies": {
+    "com.microsoft.maps.unity": "0.11.2",
+    "com.microsoft.mixedreality.toolkit.examples": "2.8.2",
     "com.microsoft.mixedreality.toolkit.foundation": "2.8.2",
     "com.microsoft.mixedreality.toolkit.tools": "2.8.2",
-    "com.microsoft.mixedreality.toolkit.examples": "2.8.2",
-    
     "com.unity.collab-proxy": "1.17.1",
     "com.unity.feature.development": "1.0.1",
     "com.unity.ide.rider": "3.0.15",
@@ -35,6 +33,7 @@
     "com.unity.visualscripting": "1.7.8",
     "com.unity.xr.management": "4.3.1",
     "com.unity.xr.oculus": "3.0.2",
+    "com.unity.xr.openxr": "1.4.2",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",

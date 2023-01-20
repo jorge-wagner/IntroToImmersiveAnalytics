@@ -34,7 +34,7 @@ Shader "Mixed Reality Toolkit/InvisibleShader" {
 
 			struct v2f 
 			{
-				fixed4 position : SV_POSITION;
+				float4 position : SV_POSITION;
                 UNITY_VERTEX_OUTPUT_STEREO
 			};
 
@@ -43,13 +43,13 @@ Shader "Mixed Reality Toolkit/InvisibleShader" {
 				v2f o;
                 UNITY_SETUP_INSTANCE_ID(v);
                 UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-				o.position = fixed4(0,0,0,0);
+				o.position = float4(0,0,0,0);
 				return o;
 			}
 
-			fixed4 frag() : COLOR
+			float4 frag() : COLOR
 			{
-				return fixed4(0,0,0,0);
+				return float4(0,0,0,0);
 			}
 		ENDCG
 		}

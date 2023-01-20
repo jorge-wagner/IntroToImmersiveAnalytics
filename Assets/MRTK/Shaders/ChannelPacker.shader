@@ -66,12 +66,12 @@ Shader "Hidden/ChannelPacker"
                 return o;
             }
 
-            fixed4 ToGrayScale(fixed4 color)
+            float4 ToGrayScale(float4 color)
             {
                 return color.r * 0.21 + color.g * 0.71 + color.b * 0.08;
             }
 
-            fixed Sample(fixed4 color, int channel, float uniformValue)
+            float Sample(float4 color, int channel, float uniformValue)
             {
                 if (uniformValue >= 0.0)
                 {
@@ -86,9 +86,9 @@ Shader "Hidden/ChannelPacker"
                 return color[channel];
             }
 
-            fixed4 frag(v2f i) : SV_Target
+            float4 frag(v2f i) : SV_Target
             {
-                fixed4 output;
+                float4 output;
 
                 output.r = Sample(tex2D(_MetallicMap, i.uv), _MetallicMapChannel, _MetallicUniform);
                 output.g = Sample(tex2D(_OcclusionMap, i.uv), _OcclusionMapChannel, _OcclusionUniform);

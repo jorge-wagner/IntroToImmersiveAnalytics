@@ -77,17 +77,17 @@ SubShader {
 #endif
 
 #if defined(_CLIPPING_PLANE)
-        fixed _ClipPlaneSide;
+        float _ClipPlaneSide;
         float4 _ClipPlane;
 #endif
 
 #if defined(_CLIPPING_SPHERE)
-        fixed _ClipSphereSide;
+        float _ClipSphereSide;
         float4x4 _ClipSphereInverseTransform;
 #endif
 
 #if defined(_CLIPPING_BOX)
-        fixed _ClipBoxSide;
+        float _ClipBoxSide;
         float4x4 _ClipBoxInverseTransform;
 #endif
 
@@ -105,7 +105,7 @@ SubShader {
         struct v2f {
 
         float4 vertex   : SV_POSITION;
-        fixed4 color    : COLOR;
+        float4 color    : COLOR;
         half2 texcoord  : TEXCOORD0;				
         float3 worldPosition : TEXCOORD1;
 
@@ -113,8 +113,8 @@ SubShader {
         UNITY_VERTEX_OUTPUT_STEREO     
         };
 
-        fixed4 _Color;
-        fixed4 _TextureSampleAdd;
+        float4 _Color;
+        float4 _TextureSampleAdd;
         float4 _ClipRect;
 
         v2f vert(appdata_t IN)
@@ -149,7 +149,7 @@ SubShader {
 
         sampler2D _MainTex; 
 
-        fixed4 frag(v2f IN) : SV_Target
+        float4 frag(v2f IN) : SV_Target
         {
             half4 color = (tex2D(_MainTex, IN.texcoord) + _TextureSampleAdd) * IN.color;
 				

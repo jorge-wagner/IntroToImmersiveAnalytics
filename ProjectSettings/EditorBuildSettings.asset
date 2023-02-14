@@ -42,7 +42,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Interactible Map with Bing.unity
     guid: 3bced8a23c8d442a58559d37655a1e1b
   - enabled: 0
-    path: Assets/Scenes/Not working/Interactive Scatterplot plotted with IATK.unity
+    path: Assets/Scenes/Interactive Scatterplot plotted with IATK.unity
     guid: 3d04e960e24574bdd8f600a5c88b7570
   - enabled: 0
     path: Assets/Scenes/Basic Interactions with MRTK.unity

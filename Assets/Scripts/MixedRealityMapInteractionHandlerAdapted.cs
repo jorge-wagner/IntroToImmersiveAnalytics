@@ -5,9 +5,7 @@ using Microsoft.Geospatial;
 using Microsoft.Maps.Unity;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
-using Microsoft.MixedReality.Toolkit.Physics;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 
@@ -31,35 +29,23 @@ using UnityEngine;
 public class MixedRealityMapInteractionHandlerAdapted : MapInteractionHandler, IMixedRealityPointerHandler, IMixedRealityInputHandler<Vector2>, IMixedRealityFocusHandler
 {
     private bool _isFocused = false;
-    bool hasValidPriorPosition = false;
-    Vector3 centerBetweenCurrentTargets, targetPointInLocalSpace;
+    bool hasValidPriorPosition = false, hasValidPriorPositionsForTwoPointers = false;
+    Vector3 oldCenterBetweenTargets, oldTargetPointInLocalSpace, oldTargetPointInLocalSpaceLeft, oldTargetPointInLocalSpaceRight;
 
     private void OnEnable()
     {
-        if (CoreServices.InputSystem != null)
-        {
-            CoreServices.InputSystem.RegisterHandler<IMixedRealityInputHandler<Vector2>>(this);
-            CoreServices.InputSystem.RegisterHandler<IMixedRealityPointerHandler>(this);
-        }
     }
 
     private void Update()
     {
-
     }
 
     private void OnDisable()
     {
-        if (CoreServices.InputSystem != null)
-        {
-            CoreServices.InputSystem.UnregisterHandler<IMixedRealityInputHandler<Vector2>>(this);
-            CoreServices.InputSystem.UnregisterHandler<IMixedRealityPointerHandler>(this);
-        }
     }
 
     public void OnPointerClicked(MixedRealityPointerEventData eventData)
     {
-
     }
 
     public virtual void OnPointerDown(MixedRealityPointerEventData eventData)
@@ -68,6 +54,8 @@ public class MixedRealityMapInteractionHandlerAdapted : MapInteractionHandler, I
     focusDets.Object == gameObject)
         {
             pointerDataList.Add(new PointerData(eventData.Pointer, eventData.Pointer.Result.Details.Point));
+
+            eventData.Pointer.IsTargetPositionLockedOnFocusLock = false;
         }
 
         if (pointerDataList.Count > 0)
@@ -99,39 +87,27 @@ public class MixedRealityMapInteractionHandlerAdapted : MapInteractionHandler, I
         Debug.Assert(pointerDataList.Count == 1);
         IMixedRealityPointer pointer = pointerDataList[0].Pointer;
 
-        CoreServices.InputSystem.FocusProvider.TryGetFocusDetails(pointer, out var focusDetails);
-
-        // Raycast an imaginary plane orignating from the updated targetPointInLocalSpace.
-
-        var rayPositionInMapLocalSpace = MapRenderer.transform.InverseTransformPoint(pointer.Position);
-        var rayDirectionInMapLocalSpace = MapRenderer.transform.InverseTransformDirection(pointer.Rotation * Vector3.forward).normalized;
-        var rayInMapLocalSpace = new Ray(rayPositionInMapLocalSpace, rayDirectionInMapLocalSpace.normalized);
-        var hitPlaneInMapLocalSpace = new Plane(Vector3.up, targetPointInLocalSpace);
-        if (hitPlaneInMapLocalSpace.Raycast(rayInMapLocalSpace, out float enter))
+        if (hasValidPriorPosition)
         {
-            targetPointInLocalSpace = focusDetails.PointLocalSpace;
 
             var targetPointInMercator =
-                  MapRenderer.TransformLocalPointToMercatorWithAltitude(
-                      targetPointInLocalSpace,
-                      out var targetAltitudeInMeters,
-                      out _);
+                MapRenderer.TransformLocalPointToMercatorWithAltitude(
+                oldTargetPointInLocalSpace,
+                out var targetAltitudeInMeters,
+                out _);
 
-            var newTargetPointInLocalSpace = rayInMapLocalSpace.GetPoint(enter);
+            var newTargetPointInLocalSpace = pointer.Result.Details.PointLocalSpace;
 
-            // Reconstruct ray from pointer position to focus details.
             var rayTargetPoint = MapRenderer.transform.TransformPoint(newTargetPointInLocalSpace);
             var ray = new Ray(pointer.Position, (rayTargetPoint - pointer.Position).normalized);
             MapInteractionController.PanAndZoom(ray, targetPointInMercator, targetAltitudeInMeters, 0f);
 
-            // Also override the FocusDetails so that the pointer ray tracks the target coordinate.
-            focusDetails.Point = MapRenderer.transform.TransformPoint(newTargetPointInLocalSpace);
-            focusDetails.PointLocalSpace = newTargetPointInLocalSpace;
-            CoreServices.InputSystem.FocusProvider.TryOverrideFocusDetails(pointer, focusDetails);
-
             // UpdatePlots(); // Update the data visualizations linked to this map -- alternatively, use the event system for this 
-
         }
+
+        oldTargetPointInLocalSpace = pointer.Result.Details.PointLocalSpace;
+
+        hasValidPriorPosition = true;
     }
 
     void HandleTwoHandManipulationUpdated()
@@ -140,72 +116,38 @@ public class MixedRealityMapInteractionHandlerAdapted : MapInteractionHandler, I
         IMixedRealityPointer p1 = pointerDataList[0].Pointer;
         IMixedRealityPointer p2 = pointerDataList[1].Pointer;
 
-        CoreServices.InputSystem.FocusProvider.TryGetFocusDetails(p1, out var focus1);
-        CoreServices.InputSystem.FocusProvider.TryGetFocusDetails(p2, out var focus2);
-
-
-        var rayPositionInMapLocalSpace1 = MapRenderer.transform.InverseTransformPoint(p1.Position);
-        var rayDirectionInMapLocalSpace1 = MapRenderer.transform.InverseTransformDirection(p1.Rotation * Vector3.forward).normalized;
-        var rayInMapLocalSpace1 = new Ray(rayPositionInMapLocalSpace1, rayDirectionInMapLocalSpace1.normalized);
-
-        var rayPositionInMapLocalSpace2 = MapRenderer.transform.InverseTransformPoint(p2.Position);
-        var rayDirectionInMapLocalSpace2 = MapRenderer.transform.InverseTransformDirection(p2.Rotation * Vector3.forward).normalized;
-        var rayInMapLocalSpace2 = new Ray(rayPositionInMapLocalSpace2, rayDirectionInMapLocalSpace2.normalized);
-
-
-        var hitPlaneInMapLocalSpace = new Plane(Vector3.up, centerBetweenCurrentTargets);
-        if (hitPlaneInMapLocalSpace.Raycast(rayInMapLocalSpace1, out float enter1) && hitPlaneInMapLocalSpace.Raycast(rayInMapLocalSpace2, out float enter2))
+        if (hasValidPriorPositionsForTwoPointers)
         {
-            var currentTargetPointInLocalSpace1 = focus1.PointLocalSpace;
-            var currentTargetPointInLocalSpace2 = focus2.PointLocalSpace;
-            centerBetweenCurrentTargets = (currentTargetPointInLocalSpace1 + currentTargetPointInLocalSpace2) / 2f;
+            var targetPointInMercator = MapRenderer.TransformLocalPointToMercatorWithAltitude(
+                oldCenterBetweenTargets,
+                out var targetAltitudeInMeters,
+                out _);
 
-            var targetPointInMercator =
-                  MapRenderer.TransformLocalPointToMercatorWithAltitude(
-                      centerBetweenCurrentTargets,
-                      out var targetAltitudeInMeters,
-                      out _);
+            var newTargetPointInLocalSpaceLeft = p1.Result.Details.PointLocalSpace;
+            var newTargetPointInLocalSpaceRight = p2.Result.Details.PointLocalSpace;
+            var newCenterBetweenTargets = (newTargetPointInLocalSpaceLeft + newTargetPointInLocalSpaceRight) / 2f;
 
-            if (hasValidPriorPosition)
-            {
+            float prevTouchDeltaMag = (new Vector2(oldTargetPointInLocalSpaceLeft.x, oldTargetPointInLocalSpaceLeft.z) - new Vector2(oldTargetPointInLocalSpaceRight.x, oldTargetPointInLocalSpaceRight.z)).magnitude;
+            float touchDeltaMag = (new Vector2(newTargetPointInLocalSpaceLeft.x, newTargetPointInLocalSpaceLeft.z) - new Vector2(newTargetPointInLocalSpaceRight.x, newTargetPointInLocalSpaceRight.z)).magnitude;
+            var touchPointDeltaToInitialDeltaRatio = touchDeltaMag / prevTouchDeltaMag;
+            var _initialMapDimensionInMercator = Mathf.Pow(2, MapRenderer.ZoomLevel - 1);
+            var newMapDimensionInMercator = touchPointDeltaToInitialDeltaRatio * _initialMapDimensionInMercator;
+            float newZoomLevel = Mathf.Log(newMapDimensionInMercator) / Mathf.Log(2) + 1f;
+            float zoomspeed = (newZoomLevel - MapRenderer.ZoomLevel) / Time.deltaTime;
 
-                var newTargetPointInLocalSpace1 = rayInMapLocalSpace1.GetPoint(enter1);
-                var newTargetPointInLocalSpace2 = rayInMapLocalSpace2.GetPoint(enter2);
-                var centerBetweenNewTargets = (newTargetPointInLocalSpace1 + newTargetPointInLocalSpace2) / 2f;
+            var rayTargetPoint = MapRenderer.transform.TransformPoint(newCenterBetweenTargets);
+            var ray = new Ray((p1.Position + p2.Position) / 2f, (rayTargetPoint - (p1.Position + p2.Position) / 2f).normalized);
+            MapInteractionController.PanAndZoom(ray, targetPointInMercator, targetAltitudeInMeters, zoomspeed);
 
-                float prevTouchDeltaMag = (new Vector2(currentTargetPointInLocalSpace1.x, currentTargetPointInLocalSpace1.z) - new Vector2(currentTargetPointInLocalSpace2.x, currentTargetPointInLocalSpace2.z)).magnitude;
-                float touchDeltaMag = (new Vector2(newTargetPointInLocalSpace1.x, newTargetPointInLocalSpace1.z) - new Vector2(newTargetPointInLocalSpace2.x, newTargetPointInLocalSpace2.z)).magnitude;
-                float zoomFactor = 1.0f * (touchDeltaMag - prevTouchDeltaMag);
-                var touchPointDeltaToInitialDeltaRatio = touchDeltaMag / prevTouchDeltaMag;
-                var _initialMapDimensionInMercator = Mathf.Pow(2, MapRenderer.ZoomLevel - 1);
-                var newMapDimensionInMercator = touchPointDeltaToInitialDeltaRatio * _initialMapDimensionInMercator;
-                float newZoomLevel = Mathf.Log(newMapDimensionInMercator) / Mathf.Log(2) + 1f;
-                float zoomspeed = (newZoomLevel - MapRenderer.ZoomLevel) / Time.deltaTime;
-
-                // Reconstruct ray from pointer position to focus details.
-                var rayTargetPoint = MapRenderer.transform.TransformPoint(centerBetweenNewTargets);
-                var ray = new Ray((p1.Position + p2.Position) / 2f, (rayTargetPoint - (p1.Position + p2.Position) / 2f).normalized);
-                MapInteractionController.PanAndZoom(ray, targetPointInMercator, targetAltitudeInMeters, zoomspeed);
-
-                // Also override the FocusDetails so that the pointer ray tracks the target coordinate.
-                focus1.Point = MapRenderer.transform.TransformPoint(newTargetPointInLocalSpace1);
-                focus1.PointLocalSpace = newTargetPointInLocalSpace1;
-                CoreServices.InputSystem.FocusProvider.TryOverrideFocusDetails(p1, focus1);
-
-                focus2.Point = MapRenderer.transform.TransformPoint(newTargetPointInLocalSpace2);
-                focus2.PointLocalSpace = newTargetPointInLocalSpace2;
-                CoreServices.InputSystem.FocusProvider.TryOverrideFocusDetails(p2, focus2);
-
-
-                // UpdatePlots(); // Update the data visualizations linked to this map -- alternatively, use the event system for this 
-                
-
-
-            }
-
-            hasValidPriorPosition = true;
+            // UpdatePlots(); // Update the data visualizations linked to this map -- alternatively, use the event system for this 
 
         }
+
+        oldTargetPointInLocalSpaceLeft = p1.Result.Details.PointLocalSpace;
+        oldTargetPointInLocalSpaceRight = p2.Result.Details.PointLocalSpace;
+        oldCenterBetweenTargets = (oldTargetPointInLocalSpaceLeft + oldTargetPointInLocalSpaceRight) / 2f;
+
+        hasValidPriorPositionsForTwoPointers = true;
     }
 
 
@@ -216,14 +158,8 @@ public class MixedRealityMapInteractionHandlerAdapted : MapInteractionHandler, I
             pointerDataList.Remove(pointerDataToRemove);
         }
 
-        //if(pointerDataList.Count == 0)
-        //{
-        //   
-        //}
-
         hasValidPriorPosition = false;
-
-        eventData.Use();
+        hasValidPriorPositionsForTwoPointers = false;
     }
 
     public void OnInputChanged(InputEventData<Vector2> eventData)

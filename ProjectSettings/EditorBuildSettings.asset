@@ -33,22 +33,22 @@ EditorBuildSettings:
     path: Assets/Oculus/Interaction/Samples/Scenes/Examples/TouchGrabExamples.unity
     guid: ade7d3882b4495145a8fe79f5624beab
   - enabled: 0
-    path: Assets/Scenes/Interactive Scatterplot with Oculus Interactions SDK.unity
+    path: Assets/Scenes/04. Interactive Scatterplot with Oculus Interactions SDK.unity
     guid: 4e9062cf053b74669bbce55fb3a318a2
   - enabled: 0
-    path: Assets/Scenes/Interactive Scatterplot with MRTK Interactions.unity
+    path: Assets/Scenes/03. Interactive Scatterplot with MRTK Interactions.unity
     guid: 57ef5f23cccae49bb8608a833736e364
   - enabled: 1
-    path: Assets/Scenes/Interactible Map with Bing.unity
+    path: Assets/Scenes/06. Interactible Map with Bing.unity
     guid: 3bced8a23c8d442a58559d37655a1e1b
   - enabled: 0
-    path: Assets/Scenes/Interactive Scatterplot plotted with IATK.unity
+    path: Assets/Scenes/05. Interactive Scatterplot plotted with IATK.unity
     guid: 3d04e960e24574bdd8f600a5c88b7570
   - enabled: 0
-    path: Assets/Scenes/Basic Interactions with MRTK.unity
+    path: Assets/Scenes/01. Basic Interactions with MRTK.unity
     guid: 8984aaf7390ea41a8b202b39bbbb2ed5
   - enabled: 0
-    path: Assets/Scenes/Basic Interactions with Oculus Interaction SDK.unity
+    path: Assets/Scenes/02. Basic Interactions with Oculus Interaction SDK.unity
     guid: cf80d454631cb4ac4842452cd5e7cd80
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: fb016a311b57749e7a5f1b9437bd5c75, type: 2}
